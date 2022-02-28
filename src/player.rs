@@ -72,15 +72,17 @@ impl Player {
         }
     }
     fn move_pos(&mut self, rl_handle: &mut RaylibHandle) -> u32 {
-        if rl_handle.is_key_pressed(KeyboardKey::KEY_W) && !self.is_moving
-            || rl_handle.is_key_pressed(KeyboardKey::KEY_UP) && !self.is_moving
+        if (rl_handle.is_key_pressed(KeyboardKey::KEY_UP)
+            || rl_handle.is_key_pressed(KeyboardKey::KEY_W))
+            && !self.is_moving
         {
             self.is_moving = true;
 
             return (self.position.y - self.move_distance as f32) as u32;
         }
-        if rl_handle.is_key_pressed(KeyboardKey::KEY_S) && !self.is_moving
-            || rl_handle.is_key_pressed(KeyboardKey::KEY_DOWN) && !self.is_moving
+        if (rl_handle.is_key_pressed(KeyboardKey::KEY_DOWN)
+            || rl_handle.is_key_pressed(KeyboardKey::KEY_S))
+            && !self.is_moving
         {
             self.is_moving = true;
 
