@@ -21,8 +21,8 @@ fn main() {
     rl.set_target_fps(60);
     while !rl.window_should_close() {
         // UPDATE
-        //let d_time = rl.get_frame_time();
-        player.update(&mut rl);
+        let d_time = rl.get_frame_time();
+        player.update(&mut rl, d_time);
 
         // DRAW
         let mut d = rl.begin_drawing(&thread);
