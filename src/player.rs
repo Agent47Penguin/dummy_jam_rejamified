@@ -1,3 +1,4 @@
+use crate::animation::*;
 use raylib::prelude::*;
 
 pub struct Player {
@@ -10,35 +11,21 @@ pub struct Player {
 
 impl Player {
     pub fn new(rl_handle: &mut RaylibHandle, rl_thread: &RaylibThread) -> Self {
+        let p_texture = rl_handle.load_texture(rl_thread, "res/player.png").unwrap();
+        let h = p_texture.height() as f32;
+        let w = p_texture.width() as f32;
         Player {
             texture: rl_handle.load_texture(rl_thread, "res/player.png").unwrap(), // load player texture
             position: Vector2::new(
-                rl_handle
-                    .load_texture(rl_thread, "res/player.png")
-                    .unwrap()
-                    .width() as f32
-                    / 2.0
-                    * crate::SCALE,
-                ((crate::SCREEN_HEIGHT as f32 / 2.0)
-                    - (rl_handle
-                        .load_texture(rl_thread, "res/player.png")
-                        .unwrap()
-                        .height() as f32
-                        / 2.0))
-                    * crate::SCALE,
+                w / 2.0 * crate::SCALE,
+                ((crate::SCREEN_HEIGHT as f32 / 2.0) - (h / 2.0)) * crate::SCALE,
             ), // set player postion to left side, middle of screen
-            move_distance: ((crate::SCREEN_HEIGHT as f32 / 2.0
-                - rl_handle
-                    .load_texture(rl_thread, "res/player.png")
-                    .unwrap()
-                    .height() as f32
-                    / 2.0)
-                * crate::SCALE) as u16,
+            move_distance: ((crate::SCREEN_HEIGHT as f32 / 2.0 - h / 2.0) * crate::SCALE) as u16,
             next_position: 0,
             is_moving: false,
         }
     }
-    pub fn draw(&self, draw_handle: &mut RaylibDrawHandle) {
+    pub fn draw(&self, _delta_time: f32, draw_handle: &mut RaylibDrawHandle) {
         draw_handle.draw_texture_ex(
             &self.texture,
             &self.position,
@@ -49,6 +36,8 @@ impl Player {
     }
     pub fn update(&mut self, rl_handle: &mut RaylibHandle, delta_time: f32) {
         self.process_movement(rl_handle, delta_time);
+
+        //self.anim_data.update(delta_time);
     }
     fn process_movement(&mut self, rl_handle: &mut RaylibHandle, delta_time: f32) {
         if !self.is_moving {
