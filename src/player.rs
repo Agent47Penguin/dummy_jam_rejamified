@@ -7,15 +7,20 @@ pub struct Player {
     move_distance: u16,
     next_position: u32,
     is_moving: bool,
+    anim_data: AnimationData,
 }
 
 impl Player {
     pub fn new(rl_handle: &mut RaylibHandle, rl_thread: &RaylibThread) -> Self {
-        let p_texture = rl_handle.load_texture(rl_thread, "res/player.png").unwrap();
+        let p_texture = rl_handle
+            .load_texture(rl_thread, "res/player_sheet1.png")
+            .unwrap();
         let h = p_texture.height() as f32;
-        let w = p_texture.width() as f32;
+        let w = p_texture.width() as f32 / 7.0;
         Player {
-            texture: rl_handle.load_texture(rl_thread, "res/player.png").unwrap(), // load player texture
+            texture: rl_handle
+                .load_texture(rl_thread, "res/player_sheet1.png")
+                .unwrap(), // load player texture
             position: Vector2::new(
                 w / 2.0 * crate::SCALE,
                 ((crate::SCREEN_HEIGHT as f32 / 2.0) - (h / 2.0)) * crate::SCALE,
@@ -23,21 +28,43 @@ impl Player {
             move_distance: ((crate::SCREEN_HEIGHT as f32 / 2.0 - h / 2.0) * crate::SCALE) as u16,
             next_position: 0,
             is_moving: false,
+            anim_data: AnimationData::new(p_texture, 32),
         }
     }
-    pub fn draw(&self, _delta_time: f32, draw_handle: &mut RaylibDrawHandle) {
-        draw_handle.draw_texture_ex(
-            &self.texture,
-            &self.position,
-            0.0,
-            crate::SCALE,
-            Color::WHITE,
+    pub fn draw(&mut self, delta_time: f32, draw_handle: &mut RaylibDrawHandle) {
+        //let src_rec = Rectangle::new(0.0, 0.0, 32.0, 32.0);
+        let dest_rec = Rectangle::new(
+            self.position.x,
+            self.position.y,
+            32.0 * crate::SCALE,
+            32.0 * crate::SCALE,
         );
+        if !self.is_moving {
+            draw_handle.draw_texture_pro(
+                &self.texture,
+                self.anim_data.animate(delta_time),
+                dest_rec,
+                Vector2::new(0.0, 0.0),
+                0.0,
+                Color::WHITE,
+            );
+        } else {
+            // moving down
+            draw_handle.draw_texture_pro(
+                &self.texture,
+                self.anim_data
+                    .animate_move(self.position.y, self.next_position as f32),
+                dest_rec,
+                Vector2::new(0.0, 0.0),
+                0.0,
+                Color::WHITE,
+            );
+        }
     }
     pub fn update(&mut self, rl_handle: &mut RaylibHandle, delta_time: f32) {
         self.process_movement(rl_handle, delta_time);
 
-        //self.anim_data.update(delta_time);
+        //self.anim_data.animate(delta_time);
     }
     fn process_movement(&mut self, rl_handle: &mut RaylibHandle, delta_time: f32) {
         if !self.is_moving {
