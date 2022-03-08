@@ -32,7 +32,6 @@ impl Player {
         }
     }
     pub fn draw(&mut self, delta_time: f32, draw_handle: &mut RaylibDrawHandle) {
-        //let src_rec = Rectangle::new(0.0, 0.0, 32.0, 32.0);
         let dest_rec = Rectangle::new(
             self.position.x,
             self.position.y,
@@ -63,8 +62,6 @@ impl Player {
     }
     pub fn update(&mut self, rl_handle: &mut RaylibHandle, delta_time: f32) {
         self.process_movement(rl_handle, delta_time);
-
-        //self.anim_data.animate(delta_time);
     }
     fn process_movement(&mut self, rl_handle: &mut RaylibHandle, delta_time: f32) {
         if !self.is_moving {
